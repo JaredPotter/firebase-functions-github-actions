@@ -1,4 +1,14 @@
 const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+
+const FIREBASE_TOKEN = process.env.FIREBASE_TOKEN;
+
+console.log('FIREBASE_TOKEN: ' + FIREBASE_TOKEN);
+
+admin.initializeApp({
+  credential: admin.credential.refreshToken(FIREBASE_TOKEN),
+  // databaseURL: 'https://<DATABASE_NAME>.firebaseio.com',
+});
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
