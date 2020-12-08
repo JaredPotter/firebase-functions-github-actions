@@ -1,38 +1,63 @@
-name: Firebase function deploy
+# name: Firebase function deploy
 
-# Controls when the action will run. Triggers the workflow on push
-# events but only for the master branch
+# # Controls when the action will run. Triggers the workflow on push
+# # events but only for the master branch
+# on:
+#   push:
+#     branches: [master]
+
+# # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# jobs:
+#   # This workflow contains a single job called "build"
+#   build:
+#     # The type of runner that the job will run on
+#     runs-on: ubuntu-latest
+
+#     # Steps represent a sequence of tasks that will be executed as part of the job
+#     steps:
+#       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+#       - uses: actions/checkout@v2
+
+#       - name: ⎔ Setup node
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: 12
+
+#       # Runs a single command using the runners shell
+#       # And of course we need to goto our functions folder to deploy
+#       - name: Install npm packages
+#         run: |
+#           cd functions
+#           yarn install
+#       # Deploying the functions to firebase
+#       - name: Deploy to Firebase
+#         uses: w9jds/firebase-action@master
+#         with:
+#           args: deploy --only functions
+#         env:
+#           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+name: deploy
 on:
   push:
-    branches: [master]
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+    branches:
+      - master
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  master:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v2
 
       - name: ⎔ Setup node
         uses: actions/setup-node@v1
         with:
           node-version: 12
 
-      # Runs a single command using the runners shell
-      # And of course we need to goto our functions folder to deploy
-      - name: Install npm packages
-        run: |
-          cd functions
-          yarn install
-      # Deploying the functions to firebase
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only functions
+      - name: 📥 Download deps
+        working-directory: functions
+        run: npm install
+
+      - name: 🚀 Deploy
+        run: npx firebase-tools deploy --token "$FIREBASE_TOKEN"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
